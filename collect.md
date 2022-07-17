@@ -57,6 +57,8 @@ access_log /var/log/nginx/access.log json;
 - systemctl restart mysql
 - mysqldumpslow /var/log/mysql/mysql-slow.log
 - sudo mysql -u root
+<!-- or -->
+- mysql -u root -p
 - SHOW DATABASES;
 - use xxx;
 - SHOW TABLES;
@@ -89,3 +91,16 @@ worker_process = 2 * cpu
 - k6 run integrated.js
 
 - alp json --sort sum -r -m "/posts/[0-9]+,/@\w+" -o count,method,uri,min,avg,max,sum < /var/log/nginx/access.log
+
+## mysql
+- SET GLOBAL slow_query_log = 1;
+- SET GLOBAL slow_query_log_file = '/var/log/mysql/mysql-slow.log';
+- SET GLOBAL long_query_time = 0;
+- sudo apt update
+- sudo apt install percona-toolkit
+- pt-query-digest --version
+- pt-query-digest /var/log/mysql/mysql-slow.log | tee digest_$(date +%Y%m%d%H%M).txt
+- git clone https://github.com/kazeburo/query-digester.git
+- cd query-digester
+- sudo install query-digester /usr/local/bin/
+- sudo query-digester -duration 10
