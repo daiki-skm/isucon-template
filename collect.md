@@ -50,15 +50,6 @@ access_log /var/log/nginx/access.log json;
 - apt install apache2-utils
 - ab -c 1 -t 10 http://localhost/
 
-## log lotate
-```
-#!/bin/sh
-
-mv /var/log/nginx/access.log /var/log/nginx/access.log.`date +%Y%m%d-%H%M%S`
-
-nginx -s reopen
-```
-
 ## mysql
 - apt install mysql-server mysql-client
 <!-- in /etc/mysql/mysql.conf.d/mysqld.cnf -->
@@ -95,3 +86,6 @@ worker_process = 2 * cpu
 - mv 10091.jpg testimage.jpg
 
 - k6 run --vus 1 --duration 30s xxx.js
+- k6 run integrated.js
+
+- alp json --sort sum -r -m "/posts/[0-9]+,/@\w+" -o count,method,uri,min,avg,max,sum < /var/log/nginx/access.log
