@@ -93,6 +93,10 @@ worker_process = 2 * cpu
 - alp json --sort sum -r -m "/posts/[0-9]+,/@\w+" -o count,method,uri,min,avg,max,sum < /var/log/nginx/access.log
 
 ## mysql
+- sudo mysql -u root
+<!-- or -->
+- mysql -u root -p
+- SHOW PROCESSLIST;
 - SET GLOBAL slow_query_log = 1;
 - SET GLOBAL slow_query_log_file = '/var/log/mysql/mysql-slow.log';
 - SET GLOBAL long_query_time = 0;
@@ -103,4 +107,33 @@ worker_process = 2 * cpu
 - git clone https://github.com/kazeburo/query-digester.git
 - cd query-digester
 - sudo install query-digester /usr/local/bin/
-- sudo query-digester -duration 10
+- sudo query-digester -duration 10 & k6 run integrated.js
+
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- ALTER TABLE comments ADD INDEX post_id_idx(post_id);
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- ALTER TABLE comments DROP INDEX post_id_idx, ADD INDEX post_id_idx(post_id, created_at);
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- ALTER TABLE comments DROP INDEX post_id_idx, ADD INDEX post_id_idx(post_id, created_at DESC);
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+
+- SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
+- EXPLAIN SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
+- ALTER TABLE comments ADD INDEX idx_user_id(user_id);
+- SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
+- EXPLAIN SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
+
+- ALTER TABLE comments ADD FULLTEXT INDEX comments_fulltext_idx(comment) WITH PARSER ngram;
+- SELECT * FROM `comments` WHERE MATCH (comment) AGAINST ('データベース' IN BOOLEAN MODE);
+
+- EXPLAIN SELECT * FROM `users` WHERE `id` = 635;
