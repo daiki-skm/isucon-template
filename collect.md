@@ -5,6 +5,8 @@
         - k6でのシナリオを持った負荷試験
         - alpでアクセスログ解析
         - mysqldumpslowでスロークエリログ解析
+        - pt-query-digestでスロークエリログ解析
+                - query-digesterを使用
 - top/dstatで確認
 - rubyからgoに切り替え
         - goは自動で複数のCPUを利用する
@@ -93,6 +95,12 @@ wget http://--.---.---.--/image/xxx.jpg && mv xxx.jpg testimage.jpg
 
 k6 run --vus 1 --duration 30s xxx.js
 
+## pt-query-digest
+pt-query-digest /var/log/mysql/mysql-slow.log | tee digest_$(date +%Y%m%d%H%M).txt
+
+## query-digester
+sudo query-digester -duration 50 & k6 run integrated.js
+
 ## from ruby to go
 sudo systemctl stop isu-ruby &&
 sudo systemctl disable isu-ruby &&
@@ -103,9 +111,20 @@ echo "from ruby to go failed";
 # systemctl status isu-go
 
 ## mysql
+mysqldumpslow /var/log/mysql/mysql-slow.log
 
+# in /etc/mysql/mysql.conf.d/mysqld.cnf
+slow_query_log = 1 # slow query logを有効にする
+slow_query_log_file = /var/log/mysql/slow.log # slow query logを出力するファイルを指定する
+long_query_time = 0 # 指定した秒数以上かかったクエリログを出力する
+
+systemctl restart mysql # 設定ファイルに記述した設定を反映(EC2)
+
+rm /var/log/mysql/mysql-slow.log
+mysqladmin flush-logs # ログファイルを削除したり、名前を変更した場合は実行してファイルが更新されていることを伝える
 ```
 
+## ruby
 <!-- in /home/isucon/private_isu/webapp/ruby/unicorn_config.rb -->
 worker_process = 2 * cpu
 ```
@@ -132,67 +151,47 @@ echo "ruby restart failed";
 - [traP isucon 講習会](https://hackmd.io/@oribe/BkGXfhKj5)
 
 ## mysql
-<!-- in /etc/mysql/mysql.conf.d/mysqld.cnf -->
-```
-slow_query_log = 1 # slow query logを有効にする
-slow_query_log_file = /var/log/mysql/slow.log # slow query logを出力するファイルを指定する
-long_query_time = 0 # 指定した秒数以上かかったクエリログを出力する
-```
-- systemctl restart mysql
-- mysqldumpslow /var/log/mysql/mysql-slow.log
 - sudo mysql -u root
 <!-- or -->
 - mysql -u root -p
+
 - SHOW DATABASES;
-- use isuconp;
+- use xxx;
 - SHOW TABLES;
-- SHOW CREATE TABLE comments;
+- SHOW CREATE TABLE xxx;
+- SHOW PROCESSLIST;
+- SHOW FULL PROCESSLIST;
+
 <!-- index <= 5% -->
 - EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 9995 ORDER BY `created_at` DESC LIMIT 3;
 - SELECT * FROM `comments` WHERE `post_id` = 9995 ORDER BY `created_at` DESC LIMIT 3;
 - ALTER TABLE comments ADD INDEX post_id_idx(post_id);
 - EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 9995 ORDER BY `created_at` DESC LIMIT 3;
 - SELECT * FROM `comments` WHERE `post_id` = 9995 ORDER BY `created_at` DESC LIMIT 3;
-- rm /var/log/mysql/mysql-slow.log
-- mysqladmin flush-logs
 
-## mysql
-- sudo mysql -u root
-<!-- or -->
-- mysql -u root -p
-- SHOW FULL PROCESSLIST;
-- SET GLOBAL slow_query_log = 1;
-- SET GLOBAL slow_query_log_file = '/var/log/mysql/mysql-slow.log';
-- SET GLOBAL long_query_time = 0;
-
-- pt-query-digest --version
-- pt-query-digest /var/log/mysql/mysql-slow.log | tee digest_$(date +%Y%m%d%H%M).txt
-
-- sudo query-digester -duration 50 & k6 run integrated.js
-
-- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - ALTER TABLE comments ADD INDEX post_id_idx(post_id);
-- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 
-- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - ALTER TABLE comments DROP INDEX post_id_idx, ADD INDEX post_id_idx(post_id, created_at);
-- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 
-- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - ALTER TABLE comments DROP INDEX post_id_idx, ADD INDEX post_id_idx(post_id, created_at DESC);
-- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 - EXPLAIN SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
+- SELECT * FROM `comments` WHERE `post_id` = 100 ORDER BY `created_at` DESC LIMIT 3;
 
-- SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
 - EXPLAIN SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
+- SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
 - ALTER TABLE comments ADD INDEX idx_user_id(user_id);
-- SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
 - EXPLAIN SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
+- SELECT COUNT(*) FROM `comments` WHERE `user_id` = 123;
 
 - ALTER TABLE comments ADD FULLTEXT INDEX comments_fulltext_idx(comment) WITH PARSER ngram;
 - SELECT * FROM `comments` WHERE MATCH (comment) AGAINST ('データベース' IN BOOLEAN MODE);
