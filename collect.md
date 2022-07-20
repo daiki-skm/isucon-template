@@ -12,6 +12,25 @@
         - goは自動で複数のCPUを利用する
 - worker processはCPUコア数の数倍程度
         - ex) worker_process = 2 * cpu
+- db
+        - インデックス（Bツリー）
+                - 更新頻度が高いテーブルはインデックスをなるべく避ける
+                        - 新たに追加されたものによってインデックスツリーが偏る（有効にツリー探査ができなくなる）
+                - インデックスを作成すると、新たなテーブルが増える
+                        - 作成しすぎると、新たなインデックスの作成、データの追加・更新があった場合、計算量が大きくなる
+                - よく使われるものに対してインデックスを作成する
+                        - where
+                        - sort
+                - 複合インデックス
+                        - EXPLAINでExtra確認
+                        - Extra: Using where; Using filesort
+                - Covering Index
+                        - セカンダリインデックスにより、プライマリインデックスまでアクセスする必要なくなる
+                        - count(*)
+        - その他のインデックス
+                - 全文探索インデックス
+                        - 前方一致のみ
+                - 空間インデックス
 
 ## INSTALL
 ```
@@ -59,6 +78,18 @@ echo "query-digester install failed";
 
 ## COMMAND
 ```
+## dstat
+dstat --cpu
+
+## from ruby to go
+sudo systemctl stop isu-ruby &&
+sudo systemctl disable isu-ruby &&
+sudo systemctl start isu-go &&
+sudo systemctl enable isu-go ||
+echo "from ruby to go failed";
+# systemctl restart isu-go
+# systemctl status isu-go
+
 ## nginx
 # in /etc/nginx/nginx.conf
 log_format json escape=json '{"time":"$time_iso8601",'
@@ -79,37 +110,6 @@ nginx -t
 # by root user
 sudo rm /var/log/nginx/access.log && sudo systemctl reload nginx
 
-## alp
-cat /var/log/nginx/access.log | alp json
-# or
-alp json --file /var/log/nginx/access.log
-
-## apach bench
-ab -c 1 -t 10 http://localhost/
-
-## dstat
-dstat --cpu
-
-## k6
-wget http://--.---.---.--/image/xxx.jpg && mv xxx.jpg testimage.jpg
-
-k6 run --vus 1 --duration 30s xxx.js
-
-## pt-query-digest
-pt-query-digest /var/log/mysql/mysql-slow.log | tee digest_$(date +%Y%m%d%H%M).txt
-
-## query-digester
-sudo query-digester -duration 50 & k6 run integrated.js
-
-## from ruby to go
-sudo systemctl stop isu-ruby &&
-sudo systemctl disable isu-ruby &&
-sudo systemctl start isu-go &&
-sudo systemctl enable isu-go ||
-echo "from ruby to go failed";
-# systemctl restart isu-go
-# systemctl status isu-go
-
 ## mysql
 mysqldumpslow /var/log/mysql/mysql-slow.log
 
@@ -122,6 +122,25 @@ systemctl restart mysql # 設定ファイルに記述した設定を反映(EC2)
 
 rm /var/log/mysql/mysql-slow.log
 mysqladmin flush-logs # ログファイルを削除したり、名前を変更した場合は実行してファイルが更新されていることを伝える
+
+## apach bench
+ab -c 1 -t 10 http://localhost/
+
+## k6
+wget http://--.---.---.--/image/xxx.jpg && mv xxx.jpg testimage.jpg
+
+k6 run --vus 1 --duration 30s xxx.js
+
+## alp
+cat /var/log/nginx/access.log | alp json
+# or
+alp json --file /var/log/nginx/access.log
+
+## pt-query-digest
+pt-query-digest /var/log/mysql/mysql-slow.log | tee digest_$(date +%Y%m%d%H%M).txt
+
+## query-digester
+sudo query-digester -duration 50 & k6 run integrated.js
 ```
 
 ## ruby
