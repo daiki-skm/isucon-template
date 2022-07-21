@@ -143,6 +143,10 @@ pt-query-digest /var/log/mysql/mysql-slow.log | tee digest_$(date +%Y%m%d%H%M).t
 sudo query-digester -duration 50 & k6 run integrated.js
 ```
 
+## terminate
+- 不要なサービスを削除
+- tmpディレクトリの中身を削除
+
 ## ruby
 <!-- in /home/isucon/private_isu/webapp/ruby/unicorn_config.rb -->
 worker_process = 2 * cpu
@@ -155,7 +159,8 @@ echo "ruby restart failed";
 
 ## refs
 - [private-isu](https://github.com/catatsuy/private-isu)
-- [isucon-cheatsheet](https://github.com/budougumi0617/isucon-cheatsheet/blob/d642a10057342866d73af615a72b086720022cb8/script/tool_setup.sh)
+- [isucon-cheatsheet](https://github.com/budougumi0617/isucon-cheatsheet/tree/d642a10057342866d73af615a72b086720022cb8)
+- [alp sample](https://github.com/tkuchiki/alp/blob/main/docs/usage_samples.ja.md)
 - [isucontinuous git](https://github.com/ShotaKitazawa/isucontinuous)
 - [isucontinuous speakerdeck](https://speakerdeck.com/shotakitazawa/isucon-deshi-eruturuwozuo-tuta)
 - [ISUCON7予選でやったインフラのお仕事](https://qiita.com/ihsiek/items/11106ce7a13e09b61547)
