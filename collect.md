@@ -115,6 +115,7 @@ sudo query-digester -duration 50 & k6 run integrated.js
 ## terminate
 - 不要なサービスを削除
 - tmpディレクトリの中身を削除
+- nginx & mysql log無効化
 
 ## ruby
 <!-- in /home/isucon/private_isu/webapp/ruby/unicorn_config.rb -->
@@ -138,6 +139,7 @@ echo "ruby restart failed";
 - [AWS EC2でISUCONの練習環境を用意するまでに色々とはまったこと](https://zenn.dev/libra/articles/669ae27f9d0b20)
 - [linux command sequencial](https://qiita.com/egawa_kun/items/714394609eef6be8e0bf)
 - [Nginx pidとは何か](https://qiita.com/keitean/items/cfb27f496aa42a07c2e7)
+- [間違ってpushした場合の取り消し方](https://qiita.com/kazu56/items/ce6eafa67a09463e6064)
 - [k6 http requests](https://k6.io/docs/using-k6/http-requests/)
 
 - [isucon11予選](https://hackmd.io/@isucon-kuolc38th/rJjeC3jlF)

@@ -1,8 +1,11 @@
 #!/bin/sh
 
-# alp
+# go
 sudo apt update &&
 sudo apt install unzip &&
+sudo apt install golang-go;
+
+# alp
 # wget https://github.com/tkuchiki/alp/releases/download/v1.0.10/alp_linux_arm64.zip &&
 wget https://github.com/tkuchiki/alp/releases/download/v1.0.10/alp_linux_amd64.zip &&
 # unzip alp_linux_arm64.zip &&

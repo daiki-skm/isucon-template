@@ -5,16 +5,18 @@
 cd .ssh &&
 ssh-keygen -t rsa &&
 cat ~/.ssh/id_rsa.pub &&
-cd /home/isucon &&
+cd / &&
 git init &&
-cd ./private_isu/webapp &&
-git config --global --add safe.directory /home/isucon &&
-git add golang &&
-git commit -m 'golang' &&
-git branch -M main &&
+git config --global --add safe.directory / &&
+git branch main &&
+git checkout main &&
+git add ./home/isucon/xxx/xxx/go/main.go &&
+git add ./home/isucon/xxx/xxx/mysql/db/0_Schema.sql &&
+git commit -m 'init' &&
 git remote add origin git@github.com:xxx/xxx.git &&
-git config --global user.name "xxx" &&
-git config --global user.email xxx@example.com &&
-cd /home/isucon;
+git config --global user.name "wataruhigasi" &&
+git config --global user.email ayumu_h130424@outlook.jp &&
+cd /home/isucon ||
+echo "git failed";
 
 # git push -u origin main
