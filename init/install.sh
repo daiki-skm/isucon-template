@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# git repo
-git clone https://github.com/daiki328/isucon-template.git ||
-echo "git clone failed";
-
 # alp
 sudo apt update &&
 sudo apt install unzip &&
