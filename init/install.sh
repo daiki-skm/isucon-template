@@ -7,7 +7,8 @@ echo "git clone failed";
 # alp
 sudo apt update &&
 sudo apt install unzip &&
-wget https://github.com/tkuchiki/alp/releases/download/v1.0.10/alp_linux_arm64.zip &&
+# wget https://github.com/tkuchiki/alp/releases/download/v1.0.10/alp_linux_arm64.zip &&
+wget https://github.com/tkuchiki/alp/releases/download/v1.0.10/alp_linux_amd64.zip &&
 unzip alp_linux_arm64.zip &&
 sudo install ./alp /usr/local/bin &&
 rm ./alp_linux_arm64.zip &&
@@ -27,7 +28,8 @@ sudo apt install dstat ||
 echo "dstat install failed";
 
 # k6
-wget https://github.com/grafana/k6/releases/download/v0.39.0/k6-v0.39.0-linux-arm64.tar.gz &&
+# wget https://github.com/grafana/k6/releases/download/v0.39.0/k6-v0.39.0-linux-arm64.tar.gz &&
+wget https://github.com/grafana/k6/releases/download/v0.39.0/k6-v0.39.0-linux-amd64.tar.gz &&
 tar -xf k6-v0.39.0-linux-arm64.tar.gz &&
 sudo install ./k6-v0.39.0-linux-arm64/k6 /usr/local/bin/ &&
 rm ./k6-v0.39.0-linux-arm64.tar.gz &&
